@@ -80,9 +80,7 @@ playButtons.forEach(button => {
 
 
 
-// Adicione este código ao seu arquivo script.js
-
-// Configuração do FormSubmit para o formulário de contato
+// Configuração do FormSubmit para o formulário de contato com AJAX
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
@@ -94,25 +92,34 @@ if (contactForm) {
         submitButton.disabled = true;
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         
-        // Utilizar o serviço FormSubmit
+        // Preparar dados do formulário
+        const formData = {
+            nome: contactForm.querySelector('input[name="nome"]').value,
+            email: contactForm.querySelector('input[name="email"]').value,
+            telefone: contactForm.querySelector('input[name="telefone"]').value,
+            assunto: contactForm.querySelector('select[name="assunto"]').value,
+            mensagem: contactForm.querySelector('textarea[name="mensagem"]').value
+        };
+        
+        // Utilizar o serviço FormSubmit via AJAX
         fetch('https://formsubmit.co/ajax/erickkauanlauer@gmail.com', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({
-                nome: contactForm.querySelector('input[name="nome"]').value,
-                email: contactForm.querySelector('input[name="email"]').value,
-                telefone: contactForm.querySelector('input[name="telefone"]').value,
-                assunto: contactForm.querySelector('select[name="assunto"]').value,
-                mensagem: contactForm.querySelector('textarea[name="mensagem"]').value
-            })
+            body: JSON.stringify(formData)
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro na resposta da rede');
+            }
+            return response.json();
+        })
         .then(data => {
-            console.log(data);
-            // Exibir mensagem de sucesso
+            console.log('Sucesso:', data);
+            
+            // Esconder os campos do formulário
             const formGroups = contactForm.querySelectorAll('.form-group');
             formGroups.forEach(group => {
                 group.style.display = 'none';
@@ -146,10 +153,21 @@ if (contactForm) {
         })
         .catch(error => {
             console.error('Erro:', error);
+            
             // Restaurar o botão e mostrar mensagem de erro
             submitButton.disabled = false;
             submitButton.innerHTML = originalButtonText;
-            alert('Ocorreu um erro ao enviar sua mensagem. Por favor, tente novamente mais tarde.');
+            
+            // Criar e mostrar mensagem de erro
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message mt-2';
+            errorDiv.textContent = 'Ocorreu um erro ao enviar sua mensagem. Por favor, tente novamente mais tarde.';
+            submitButton.parentNode.insertBefore(errorDiv, submitButton.nextSibling);
+            
+            // Remover mensagem de erro após 5 segundos
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
         });
     });
 }
