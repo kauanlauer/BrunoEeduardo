@@ -1102,3 +1102,61 @@ footer::before {
         padding: 14px;
     }
 }
+
+
+
+
+/* Estilos para o crédito do desenvolvedor */
+.developer-credit {
+    margin-top: 15px;
+    font-size: 13px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.developer-credit:hover {
+    opacity: 1;
+}
+
+.developer-credit p {
+    color: var(--gray);
+}
+
+.developer-credit a {
+    color: var(--primary);
+    text-decoration: none;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.developer-credit a:hover {
+    color: var(--primary-light);
+}
+
+.developer-credit a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.developer-credit a:hover::after {
+    width: 100%;
+}
+
+.developer-credit .fa-heart {
+    color: var(--primary);
+    font-size: 11px;
+    margin: 0 3px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
