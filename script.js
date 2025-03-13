@@ -95,7 +95,7 @@ if (contactForm) {
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         
         // Utilizar o serviço FormSubmit
-        fetch('https://formsubmit.co/ajax/SEU_EMAIL@AQUI.com', {
+        fetch('https://formsubmit.co/ajax/erickkauanlauer@gmail.com', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
