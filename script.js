@@ -164,3 +164,133 @@ if (contactForm) {
         });
     });
 }
+
+// Função para carregar eventos da API SheetDB
+async function loadEvents() {
+    try {
+        // Referência à lista de eventos
+        const eventsList = document.getElementById('eventsList');
+        
+        // URL da API SheetDB conectada à planilha
+        const sheetdbUrl = 'https://sheetdb.io/api/v1/5qkify7trsj77';
+        
+        // Fazer a requisição para a API SheetDB
+        const response = await fetch(sheetdbUrl, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            // Adicionar modo no-cors para tentar evitar problemas de CORS
+            // Nota: em produção, isso pode não ser necessário
+            mode: 'cors',
+            cache: 'no-cache'
+        });
+        
+        // Verificar se a resposta foi bem-sucedida
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.status}`);
+        }
+        
+        // Converter a resposta para JSON
+        const events = await response.json();
+        
+        // Verificar se há eventos para exibir
+        if (!events || events.length === 0) {
+            eventsList.innerHTML = `
+                <div class="text-center">
+                    <p>Não há shows agendados no momento. Fique atento para novidades!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Limpar a lista de eventos e remover mensagem de carregamento
+        eventsList.innerHTML = '';
+        
+        // Ordenar eventos por data (do mais próximo para o mais distante)
+        // Ajuste para o formato de data usado na sua planilha (DD/MM/YYYY)
+        events.sort((a, b) => {
+            const dateA = convertDate(a.date);
+            const dateB = convertDate(b.date);
+            return dateA - dateB;
+        });
+        
+        // Criar elementos para cada evento
+        events.forEach(event => {
+            // Converter a string de data para objeto Date
+            const date = convertDate(event.date);
+            
+            // Verificar se a data é válida
+            if (isNaN(date.getTime())) {
+                console.error('Data inválida para o evento:', event);
+                return; // Pular este evento
+            }
+            
+            // Obter o dia e mês formatados
+            const day = date.getDate();
+            const monthNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+            const month = monthNames[date.getMonth()];
+            
+            // Criar elemento do evento
+            const eventItem = document.createElement('li');
+            eventItem.className = 'event-item fade-in';
+            
+            // Definir o HTML interno do item
+            eventItem.innerHTML = `
+                <div class="event-date">
+                    <div class="event-day">${day}</div>
+                    <div class="event-month">${month}</div>
+                </div>
+                <div class="event-details">
+                    <h3 class="event-title">${event.title || 'Evento'}</h3>
+                    <p class="event-location">${event.location || 'Local a confirmar'}</p>
+                </div>
+                <div class="event-button">
+                    <a href="${event.ticketLink || '#'}" class="btn btn-primary" ${!event.ticketLink ? 'disabled' : ''}>
+                        ${event.ticketLink ? 'Ingressos' : 'Em breve'}
+                    </a>
+                </div>
+            `;
+            
+            // Adicionar o item à lista
+            eventsList.appendChild(eventItem);
+        });
+        
+    } catch (error) {
+        console.error('Erro ao carregar eventos:', error);
+        
+        // Exibir mensagem de erro para o usuário
+        document.getElementById('eventsList').innerHTML = `
+            <div class="text-center">
+                <p>Não foi possível carregar a agenda de shows. Por favor, tente novamente mais tarde.</p>
+                <button id="retryLoadEvents" class="btn btn-outline mt-4">Tentar novamente</button>
+            </div>
+        `;
+        
+        // Configurar botão para tentar novamente
+        document.getElementById('retryLoadEvents')?.addEventListener('click', loadEvents);
+    }
+    
+    // Ativar animações
+    animateOnScroll();
+}
+
+// Função auxiliar para converter string de data no formato DD/MM/YYYY para objeto Date
+function convertDate(dateString) {
+    // Verificar se a data está no formato DD/MM/YYYY
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+        const parts = dateString.split('/');
+        // Criar data no formato MM/DD/YYYY (formato aceito pelo construtor Date)
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+    } 
+    // Se estiver no formato YYYY-MM-DD (ISO)
+    else if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        return new Date(dateString);
+    }
+    // Tentar converter diretamente (caso seja outro formato)
+    return new Date(dateString);
+}
+
+// Carregar eventos ao abrir a página
+window.addEventListener('load', loadEvents);
