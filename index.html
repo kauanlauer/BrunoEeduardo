@@ -324,25 +324,31 @@
                 
                 <div class="contact-form fade-in">
                     <h3 class="contact-heading">Envie sua mensagem</h3>
-                    <form id="contactForm">
+                    <form id="contactForm" action="https://formsubmit.co/erickkauanlauer@gmail.com" method="POST">
+                        <!-- Configurações do FormSubmit -->
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" name="_next" value="https://seusite.com.br/agradecimento.html">
+                        <input type="hidden" name="_subject" value="Nova mensagem de contato - Bruno & Eduardo">
+                        <input type="hidden" name="_template" value="table">
+                        
                         <div class="form-group">
                             <label class="form-label">Nome</label>
-                            <input type="text" class="form-control" required>
+                            <input type="text" name="nome" class="form-control" required>
                         </div>
                         
                         <div class="form-group">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" required>
+                            <input type="email" name="email" class="form-control" required>
                         </div>
                         
                         <div class="form-group">
                             <label class="form-label">Telefone</label>
-                            <input type="tel" class="form-control">
+                            <input type="tel" name="telefone" class="form-control">
                         </div>
                         
                         <div class="form-group">
                             <label class="form-label">Assunto</label>
-                            <select class="form-control" required>
+                            <select name="assunto" class="form-control" required>
                                 <option value="">Selecione um assunto</option>
                                 <option value="contratacao">Contratação de Shows</option>
                                 <option value="midia">Imprensa/Mídia</option>
@@ -353,7 +359,7 @@
                         
                         <div class="form-group">
                             <label class="form-label">Mensagem</label>
-                            <textarea class="form-control" required></textarea>
+                            <textarea name="mensagem" class="form-control" required></textarea>
                         </div>
                         
                         <button type="submit" class="btn btn-primary">Enviar Mensagem</button>

@@ -1042,3 +1042,63 @@ footer::before {
         align-items: flex-start;
     }
 }
+
+
+/* Estilos adicionais para o formulário de contato */
+
+/* Mensagem de sucesso */
+.success-message {
+    text-align: center;
+    padding: 40px 20px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.success-icon {
+    font-size: 60px;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+.success-message h3 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.success-message p {
+    color: var(--gray);
+    margin-bottom: 25px;
+}
+
+/* Animação de loading no botão */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* Validação de formulário - mensagens de erro */
+.form-control.error {
+    border-color: #e74c3c;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Efeito de foco no formulário */
+.form-control:focus {
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/* Melhorar responsividade de botões */
+@media (max-width: 576px) {
+    .btn {
+        width: 100%;
+        padding: 14px;
+    }
+}
