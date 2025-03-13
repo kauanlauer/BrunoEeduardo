@@ -79,8 +79,7 @@ playButtons.forEach(button => {
 
 
 
-
-// Configuração do FormSubmit para o formulário de contato com AJAX
+// Configuração do Web3Forms para o formulário de contato
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
@@ -92,23 +91,13 @@ if (contactForm) {
         submitButton.disabled = true;
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         
-        // Preparar dados do formulário
-        const formData = {
-            nome: contactForm.querySelector('input[name="nome"]').value,
-            email: contactForm.querySelector('input[name="email"]').value,
-            telefone: contactForm.querySelector('input[name="telefone"]').value,
-            assunto: contactForm.querySelector('select[name="assunto"]').value,
-            mensagem: contactForm.querySelector('textarea[name="mensagem"]').value
-        };
+        // Capturar todos os dados do formulário
+        const formData = new FormData(contactForm);
         
-        // Utilizar o serviço FormSubmit via AJAX
-        fetch('https://formsubmit.co/ajax/erickkauanlauer@gmail.com', {
+        // Enviar formulário para Web3Forms
+        fetch('https://api.web3forms.com/submit', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(formData)
+            body: formData
         })
         .then(response => {
             if (!response.ok) {
@@ -117,39 +106,43 @@ if (contactForm) {
             return response.json();
         })
         .then(data => {
-            console.log('Sucesso:', data);
-            
-            // Esconder os campos do formulário
-            const formGroups = contactForm.querySelectorAll('.form-group');
-            formGroups.forEach(group => {
-                group.style.display = 'none';
-            });
-            submitButton.style.display = 'none';
-            
-            // Criar e exibir a mensagem de sucesso
-            const successMessage = document.createElement('div');
-            successMessage.className = 'success-message';
-            successMessage.innerHTML = `
-                <div class="success-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <h3>Mensagem enviada com sucesso!</h3>
-                <p>Agradecemos seu contato. Responderemos o mais breve possível.</p>
-                <button class="btn btn-primary mt-4" id="resetForm">Enviar outra mensagem</button>
-            `;
-            contactForm.appendChild(successMessage);
-            
-            // Configurar o botão para resetar o formulário
-            document.getElementById('resetForm').addEventListener('click', function() {
-                contactForm.reset();
+            if (data.success) {
+                console.log('Sucesso:', data);
+                
+                // Esconder os campos do formulário
+                const formGroups = contactForm.querySelectorAll('.form-group');
                 formGroups.forEach(group => {
-                    group.style.display = 'block';
+                    group.style.display = 'none';
                 });
-                submitButton.style.display = 'block';
-                submitButton.disabled = false;
-                submitButton.innerHTML = originalButtonText;
-                successMessage.remove();
-            });
+                submitButton.style.display = 'none';
+                
+                // Criar e exibir a mensagem de sucesso
+                const successMessage = document.createElement('div');
+                successMessage.className = 'success-message';
+                successMessage.innerHTML = `
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>Mensagem enviada com sucesso!</h3>
+                    <p>Agradecemos seu contato. Responderemos o mais breve possível.</p>
+                    <button class="btn btn-primary mt-4" id="resetForm">Enviar outra mensagem</button>
+                `;
+                contactForm.appendChild(successMessage);
+                
+                // Configurar o botão para resetar o formulário
+                document.getElementById('resetForm').addEventListener('click', function() {
+                    contactForm.reset();
+                    formGroups.forEach(group => {
+                        group.style.display = 'block';
+                    });
+                    submitButton.style.display = 'block';
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+                    successMessage.remove();
+                });
+            } else {
+                throw new Error(data.message || 'Erro ao enviar formulário');
+            }
         })
         .catch(error => {
             console.error('Erro:', error);
